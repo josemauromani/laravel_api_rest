@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Cliente\StoreRequest;
 use App\Models\Cliente;
-use Validator;
+use Image;
 
 class ClienteApiController extends Controller
 {
 
-    public function __construct(Cliente $cliente, Request $request)
+    public function __construct(Cliente $cliente, StoreRequest $request)
     {
         $this->cliente = $cliente;
         $this->request = $request;
@@ -22,18 +22,26 @@ class ClienteApiController extends Controller
         return response()->json($data);
     }
 
-    public function store(Request $request)
+    public function store()
     {
 
-        $valida = Validator::make($request->all(), $this->cliente->rules(), $this->cliente->customMessages());
+        $dataForm = $this->request->all();
 
-        if ($valida->fails()) {
-            $error = ['error'=>$valida->errors()->all()];
-            return response()->json($error, 400);
-        } else {
-            $dataForm = $request->all();
-            $data = $this->cliente->create($dataForm);
-            return response()->json($data, 201);
+        if ($this->request->hasFile('cliente_imagem') && $this->request->file('cliente_imagem')->isValid()) {
+
+            $ext = $this->request->cliente_imagem->extension();
+            $nome = uniqid(date('His'));
+            $arquivo = "{$nome}.{$ext}";
+
+            $upload = Image::make($dataForm['cliente_imagem'])->resize(500)->save(storage_path("app\\public\\clientes\\$arquivo"), 70);
+            if (!$upload) {
+                return response()->json(['error' => 'Falha ao fazer upload da imagem'], 500);
+            } else {
+                $dataForm['cliente_imagem'] = $arquivo;
+            }
         }
+
+        $data = $this->cliente->create($dataForm);
+        return response()->json($data, 201);
     }
 }
