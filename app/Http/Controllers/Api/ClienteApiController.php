@@ -30,7 +30,7 @@ class ClienteApiController extends Controller
         if ($this->request->hasFile('cliente_imagem') && $this->request->file('cliente_imagem')->isValid()) {
 
             $ext = $this->request->cliente_imagem->extension();
-            $nome = uniqid(date('His'));
+            $nome = kebab_case($request->cliente_nome)."_".uniqid(date('His'));
             $arquivo = "{$nome}.{$ext}";
 
             $upload = Image::make($dataForm['cliente_imagem'])->resize(500)->save(storage_path("app\\public\\clientes\\$arquivo"), 70);
