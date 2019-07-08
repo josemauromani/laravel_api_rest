@@ -1,4 +1,5 @@
 <?php 
+Route::get('/clientes','Api\ClienteApiController@index');
+Route::get('/clientes/{id}','Api\ClienteApiController@show');
 
-Route::get('clientes','Api\ClienteApiController@index');
-Route::post('clientes','Api\ClienteApiController@store');
+Route::post('/clientes','Api\ClienteApiController@store');

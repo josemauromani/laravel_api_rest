@@ -10,26 +10,20 @@ use Image;
 class ClienteApiController extends Controller
 {
 
-    public function __construct(Cliente $cliente, StoreRequest $request)
-    {
-        $this->cliente = $cliente;
-        $this->request = $request;
-    }
-
     public function index()
     {
-        $data = $this->cliente->all();
+        $data = Cliente::all();
         return response()->json($data);
     }
 
-    public function store()
+    public function store(StoreRequest $request, Cliente $cliente)
     {
 
-        $dataForm = $this->request->all();
+        $dataForm = $request->all();
 
-        if ($this->request->hasFile('cliente_imagem') && $this->request->file('cliente_imagem')->isValid()) {
+        if ($request->hasFile('cliente_imagem') && $request->file('cliente_imagem')->isValid()) {
 
-            $ext = $this->request->cliente_imagem->extension();
+            $ext = $request->cliente_imagem->extension();
             $nome = kebab_case($request->cliente_nome)."_".uniqid(date('His'));
             $arquivo = "{$nome}.{$ext}";
 
@@ -41,7 +35,21 @@ class ClienteApiController extends Controller
             }
         }
 
-        $data = $this->cliente->create($dataForm);
+        $data = $cliente->create($dataForm);
         return response()->json($data, 201);
     }
+
+
+    public function show($id, Cliente $cliente) {
+        
+        $data = $cliente->find($id);
+        if (!$data) {
+            return response()->json(['error'=>'Cliente não encontrado'],404);
+        } else {
+            return response()->json($data);
+        }
+
+    }
+
+
 }
