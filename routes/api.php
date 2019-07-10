@@ -13,3 +13,16 @@ Route::get('/telefones/{id}/clientes', 'Api\TelefoneApiController@clientes');
 
 Route::get('/filmes', 'Api\FilmeApiController@index');
 Route::get('/filmes/{id}/locacoes', 'Api\FilmeApiController@locacoes');
+
+Route::group([
+
+    'middleware' => 'api',
+    'prefix' => 'auth'
+
+], function () {
+
+    Route::post('login', 'AuthController@login');
+    Route::post('logout', 'AuthController@logout');
+    Route::post('refresh', 'AuthController@refresh');
+    Route::post('me', 'AuthController@me');
+});
