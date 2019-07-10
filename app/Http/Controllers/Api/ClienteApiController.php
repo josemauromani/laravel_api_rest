@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Cliente\StoreRequest;
 use App\Models\Cliente;
 use Image;
+use Storage;
 
 class ClienteApiController extends Controller
 {
@@ -47,6 +48,21 @@ class ClienteApiController extends Controller
             return response()->json(['error'=>'Cliente não encontrado'],404);
         } else {
             return response()->json($data);
+        }
+
+    }
+
+    public function destroy($id) {
+
+        $data = Cliente::find($id);
+        if (!$data) {
+            return response()->json(['error'=>'Usuário não encontrado'],404);
+        } else {
+            if ($data->cliente_imagem) {
+                Storage::disk('public')->delete("clientes/$data->cliente_imagem");
+            }
+            $data->delete();
+            return response()->json(['succcess'=>'Usuário excluído com sucesso.'],200);
         }
 
     }
