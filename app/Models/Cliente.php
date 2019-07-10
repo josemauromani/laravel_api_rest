@@ -11,4 +11,14 @@ class Cliente extends Model
         'cliente_imagem',
         'cliente_documento',
     ];
+
+    public function telefones()
+    {
+        return $this->hasMany('App\Models\Telefone');
+    }
+
+    public function alugados()
+    {
+        return $this->belongsToMany('App\Models\Filme', 'locacoes');
+    }
 }

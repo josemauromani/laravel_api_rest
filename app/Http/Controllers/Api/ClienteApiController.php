@@ -88,4 +88,17 @@ class ClienteApiController extends Controller
             return response()->json(['succcess' => 'Usuário excluído com sucesso.'], 200);
         }
     }
+
+    public function telefones($id, Cliente $cli)
+    {
+        $data = $cli->with('telefones')->find($id);
+        return response()->json($data);
+    }
+
+
+    public function locacoes($id, Cliente $cli)
+    {
+        $data = $cli->with('alugados')->find($id);
+        return response()->json($data);
+    }
 }

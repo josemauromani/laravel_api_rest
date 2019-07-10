@@ -15,6 +15,8 @@ class CreateFilmesTable extends Migration
     {
         Schema::create('filmes', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('filme_titulo');
+            $table->string('filme_capa');
             $table->timestamps();
         });
     }
