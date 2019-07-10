@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'cliente_nome' => 'required',
-            'cliente_imagem' => 'image|mimes:png,jpg,jpeg',
+            'cliente_imagem' => 'image|mimes:jpg,jpeg,png',
             'cliente_documento' => 'required|unique:clientes'
         ];
     }

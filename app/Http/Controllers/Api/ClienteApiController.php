@@ -25,10 +25,10 @@ class ClienteApiController extends Controller
         if ($request->hasFile('cliente_imagem') && $request->file('cliente_imagem')->isValid()) {
 
             $ext = $request->cliente_imagem->extension();
-            $nome = kebab_case($request->cliente_nome)."_".uniqid(date('His'));
+            $nome = kebab_case($request->cliente_nome) . "_" . uniqid(date('His'));
             $arquivo = "{$nome}.{$ext}";
 
-            $upload = Image::make($dataForm['cliente_imagem'])->resize(500)->save(storage_path("app\\public\\clientes\\$arquivo"), 70);
+            $upload = Image::make($dataForm['cliente_imagem'])->resize(800)->save(storage_path("app/public/clientes/$arquivo"), 70);
             if (!$upload) {
                 return response()->json(['error' => 'Falha ao fazer upload da imagem'], 500);
             } else {
@@ -40,32 +40,52 @@ class ClienteApiController extends Controller
         return response()->json($data, 201);
     }
 
+    public function update(StoreRequest $request, $id)
+    {
+        $dataForm = $request->all();
 
-    public function show($id, Cliente $cliente) {
-        
+        if ($request->hasFile('cliente_imagem') && $request->file('cliente_imagem')->isValid()) {
+
+            $ext = $request->cliente_imagem->extension();
+            $nome = kebab_case($request->cliente_nome) . "_" . uniqid(date('His'));
+            $arquivo = "{$nome}.{$ext}";
+
+            $upload = Image::make($dataForm['cliente_imagem'])->resize(800)->save(storage_path("app/public/clientes/$arquivo"), 70);
+            if (!$upload) {
+                return response()->json(['error' => 'Falha ao fazer upload da imagem'], 500);
+            } else {
+                $dataForm['cliente_imagem'] = $arquivo;
+            }
+        }
+        $cliente = Cliente::find($id);
+        $data = $cliente->update($dataForm);
+        return response()->json($data, 201);
+    }
+
+
+    public function show($id, Cliente $cliente)
+    {
+
         $data = $cliente->find($id);
         if (!$data) {
-            return response()->json(['error'=>'Cliente não encontrado'],404);
+            return response()->json(['error' => 'Cliente não encontrado'], 404);
         } else {
             return response()->json($data);
         }
-
     }
 
-    public function destroy($id) {
+    public function destroy($id)
+    {
 
         $data = Cliente::find($id);
         if (!$data) {
-            return response()->json(['error'=>'Usuário não encontrado'],404);
+            return response()->json(['error' => 'Usuário não encontrado'], 404);
         } else {
             if ($data->cliente_imagem) {
                 Storage::disk('public')->delete("clientes/$data->cliente_imagem");
             }
             $data->delete();
-            return response()->json(['succcess'=>'Usuário excluído com sucesso.'],200);
+            return response()->json(['succcess' => 'Usuário excluído com sucesso.'], 200);
         }
-
     }
-
-
 }
