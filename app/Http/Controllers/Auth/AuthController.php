@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Tymon\JWTAuth\JWTAuth;
 use App\Http\Controllers\Controller;
+use Tymon\JWTAuth\Facades\JWTAuth as TymonJWTAuth;
 
 class AuthController extends Controller
 {
@@ -24,12 +26,10 @@ class AuthController extends Controller
      */
     public function login()
     {
-
-
         $credentials = request(['email', 'password']);
 
         if (!$token = auth()->guard('api')->attempt($credentials)) {
-            return response()->json(['error' => true, 'message' => 'Invalid Credentials']);
+            return response()->json(['error' => true, 'message' => 'Credenciais Inválidas']);
         }
 
         return $this->respondWithToken($token);
@@ -42,7 +42,7 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        return response()->json(auth('api')->user());
     }
 
     /**
@@ -52,8 +52,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
-
+        auth('api')->logout();
         return response()->json(['message' => 'Successfully logged out']);
     }
 
@@ -77,6 +76,7 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
+            'user' => auth('api')->user(),
             'token' => $token,
             'token_type'   => 'bearer',
             'expires_in'   => auth('api')->factory()->getTTL() * 60
